@@ -18,6 +18,7 @@
 package garbagecover;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 
 import javax.swing.*;
 
@@ -27,8 +28,11 @@ import docking.action.DockingAction;
 import docking.action.ToolBarData;
 import ghidra.app.plugin.PluginCategoryNames;
 import ghidra.app.plugin.ProgramPlugin;
+import ghidra.app.plugin.core.colorizer.ColorizingService;
 import ghidra.framework.plugintool.*;
 import ghidra.framework.plugintool.util.PluginStatus;
+import ghidra.program.flatapi.FlatProgramAPI;
+import ghidra.program.model.address.Address;
 import ghidra.util.HelpLocation;
 import ghidra.util.Msg;
 import resources.Icons;
@@ -50,6 +54,8 @@ import resources.Icons;
 public class GarbageCoverPlugin extends ProgramPlugin {
 
 	GarbageCoverProvider provider;
+	private FlatProgramAPI flatApi;
+	private ColorizingService colorService;
 
 	/**
 	 * Plugin constructor.
@@ -71,9 +77,28 @@ public class GarbageCoverPlugin extends ProgramPlugin {
 	@Override
 	public void init() {
 		super.init();
-
+        flatApi = new FlatProgramAPI(this.currentProgram);
+        colorService = tool.getService(ColorizingService.class);
 		// TODO: Acquire services if necessary
 	}
+	
+    public boolean setInstructionBackgroundColor(long addr, Color color) {
+
+        Address ba;
+        // TODO: create FlatProgramAPI instance in init
+
+
+        if (colorService == null) {
+                return false;
+        }
+
+        ba = flatApi.toAddr(addr);
+
+        colorService.setBackgroundColor(ba, ba, color);
+
+        return true;
+}
+
 
 	private static class GarbageCoverProvider extends ComponentProvider {
 
