@@ -12,6 +12,8 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ * 
+ * Additional IP: Hugo Genesse
  */
 package garbagecover;
 
@@ -23,7 +25,6 @@ import docking.ActionContext;
 import docking.ComponentProvider;
 import docking.action.DockingAction;
 import docking.action.ToolBarData;
-import ghidra.app.ExamplesPluginPackage;
 import ghidra.app.plugin.PluginCategoryNames;
 import ghidra.app.plugin.ProgramPlugin;
 import ghidra.framework.plugintool.*;
@@ -37,16 +38,18 @@ import resources.Icons;
  */
 //@formatter:off
 @PluginInfo(
-	status = PluginStatus.STABLE,
-	packageName = ExamplesPluginPackage.NAME,
-	category = PluginCategoryNames.EXAMPLES,
-	shortDescription = "Plugin short description goes here.",
-	description = "Plugin long description goes here."
+	status = PluginStatus.UNSTABLE,
+	packageName = GarbageCoverPluginPackage.NAME,
+	category = PluginCategoryNames.MISC,
+	shortDescription = "GBA code coverage viewer for Ghidra.",
+	description = "GBA code coverage viewer for Ghidra\n"
+			+ "\n"
+			+ "Code coverage format is based on the mGBA fork SiD3W4y/mgba."
 )
 //@formatter:on
 public class GarbageCoverPlugin extends ProgramPlugin {
 
-	MyProvider provider;
+	GarbageCoverProvider provider;
 
 	/**
 	 * Plugin constructor.
@@ -56,9 +59,8 @@ public class GarbageCoverPlugin extends ProgramPlugin {
 	public GarbageCoverPlugin(PluginTool tool) {
 		super(tool, true, true);
 
-		// TODO: Customize provider (or remove if a provider is not desired)
 		String pluginName = getName();
-		provider = new MyProvider(this, pluginName);
+		provider = new GarbageCoverProvider(this, pluginName);
 
 		// TODO: Customize help (or remove if help is not desired)
 		String topicName = this.getClass().getPackage().getName();
@@ -73,13 +75,12 @@ public class GarbageCoverPlugin extends ProgramPlugin {
 		// TODO: Acquire services if necessary
 	}
 
-	// TODO: If provider is desired, it is recommended to move it to its own file
-	private static class MyProvider extends ComponentProvider {
+	private static class GarbageCoverProvider extends ComponentProvider {
 
 		private JPanel panel;
 		private DockingAction action;
 
-		public MyProvider(Plugin plugin, String owner) {
+		public GarbageCoverProvider(Plugin plugin, String owner) {
 			super(plugin.getTool(), owner, owner);
 			buildPanel();
 			createActions();
