@@ -33,6 +33,7 @@ import ghidra.framework.plugintool.*;
 import ghidra.framework.plugintool.util.PluginStatus;
 import ghidra.program.flatapi.FlatProgramAPI;
 import ghidra.program.model.address.Address;
+import ghidra.program.model.listing.Program;
 import ghidra.util.HelpLocation;
 import ghidra.util.Msg;
 import resources.Icons;
@@ -77,9 +78,15 @@ public class GarbageCoverPlugin extends ProgramPlugin {
 	@Override
 	public void init() {
 		super.init();
-        flatApi = new FlatProgramAPI(this.currentProgram);
         colorService = tool.getService(ColorizingService.class);
 		// TODO: Acquire services if necessary
+	}
+	
+	@Override
+	public void programActivated(Program program) {
+		super.programActivated(program);
+		
+		flatApi = new FlatProgramAPI(this.currentProgram);
 	}
 	
     public boolean setInstructionBackgroundColor(long addr, Color color) {
@@ -91,7 +98,9 @@ public class GarbageCoverPlugin extends ProgramPlugin {
         if (colorService == null) {
                 return false;
         }
-
+        if (flatApi == null) {
+        	return false;
+        }
         ba = flatApi.toAddr(addr);
 
         colorService.setBackgroundColor(ba, ba, color);
@@ -118,6 +127,7 @@ public class GarbageCoverPlugin extends ProgramPlugin {
 			textArea.setEditable(false);
 			panel.add(new JScrollPane(textArea));
 			setVisible(true);
+			//setInstructionBackgroundColor()
 		}
 
 		// TODO: Customize actions
