@@ -91,9 +91,7 @@ public class GarbageCoverPlugin extends ProgramPlugin {
 	
     public boolean setInstructionBackgroundColor(long addr, Color color) {
 
-        Address ba;
-        // TODO: create FlatProgramAPI instance in init
-
+        Address ba; 
 
         if (colorService == null) {
                 return false;
@@ -102,24 +100,30 @@ public class GarbageCoverPlugin extends ProgramPlugin {
         	return false;
         }
         ba = flatApi.toAddr(addr);
+        
+        int transactionID = flatApi.getCurrentProgram().startTransaction("BgPaint");
 
         colorService.setBackgroundColor(ba, ba, color);
+        
+        flatApi.getCurrentProgram().endTransaction(transactionID, true);
 
         return true;
-}
+    }
 
 
 	private static class GarbageCoverProvider extends ComponentProvider {
 
 		private JPanel panel;
 		private DockingAction action;
+		private Plugin garbageCover;
 
 		public GarbageCoverProvider(Plugin plugin, String owner) {
 			super(plugin.getTool(), owner, owner);
+			setGarbageCover(plugin);
 			buildPanel();
 			createActions();
+			
 		}
-
 		// Customize GUI
 		private void buildPanel() {
 			panel = new JPanel(new BorderLayout());
@@ -127,15 +131,15 @@ public class GarbageCoverPlugin extends ProgramPlugin {
 			textArea.setEditable(false);
 			panel.add(new JScrollPane(textArea));
 			setVisible(true);
-			//setInstructionBackgroundColor()
 		}
+
 
 		// TODO: Customize actions
 		private void createActions() {
 			action = new DockingAction("My Action", getName()) {
 				@Override
 				public void actionPerformed(ActionContext context) {
-					Msg.showInfo(getClass(), panel, "Custom Action", "Hello!");
+					((GarbageCoverPlugin) garbageCover).setInstructionBackgroundColor(0x08000006, new Color(0xFF, 0xFF, 0xFF));
 				}
 			};
 			action.setToolBarData(new ToolBarData(Icons.ADD_ICON, null));
@@ -147,6 +151,12 @@ public class GarbageCoverPlugin extends ProgramPlugin {
 		@Override
 		public JComponent getComponent() {
 			return panel;
+		}
+		public Plugin getGarbageCover() {
+			return garbageCover;
+		}
+		public void setGarbageCover(Plugin garbageCover) {
+			this.garbageCover = garbageCover;
 		}
 	}
 }
