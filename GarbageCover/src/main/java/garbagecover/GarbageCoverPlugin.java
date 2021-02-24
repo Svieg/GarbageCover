@@ -103,6 +103,7 @@ public class GarbageCoverPlugin extends ProgramPlugin {
         
         int transactionID = flatApi.getCurrentProgram().startTransaction("BgPaint");
 
+        Color old_color = colorService.getBackgroundColor(ba);
         colorService.setBackgroundColor(ba, ba, color);
         
         flatApi.getCurrentProgram().endTransaction(transactionID, true);
